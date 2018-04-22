@@ -2,11 +2,11 @@
 
 import argparse
 import requests
-import shutil
-from pprint import pprint
 from PIL import Image
 from io import BytesIO
 
+import os
+import platform
 import random
 import string
 
@@ -24,7 +24,7 @@ def main(subject):
         print('Error connecting to unsplash.')
         return 1
     json = resp.json()
-    # pprint(json)
+    # from pprint import pprint; pprint(json)
 
     pic_url = json['urls']['full']
     resp = requests.get(pic_url)
@@ -33,16 +33,28 @@ def main(subject):
         return 1
     ext = resp.headers['content-type'].split('/')[1]
     filename = string_gen() + '.' + ext
-    
+
     i = Image.open(BytesIO(resp.content))
     i.save(filename, ext)
-    print('Saved the wallpaper to ', filename)
-    # resp = requests.get(pic_url, stream=True)
-    # if resp.status_code == 200:
-    #     with open('surprise', 'wb') as f:
-    #         resp.raw.decode_content = True
-    #         shutil.copyfileobj(resp.raw, f)
+    filepath = os.path.realpath(filename)
+    print('Saved the wallpaper to', filepath)
+    set_background(filepath)
 
+
+def set_background(filepath):
+    opsys = platform.system()
+    if opsys == 'Windows':
+        import ctypes
+        ctypes.windll.user32.SystemParametersInfoA(20, 0, filepath, 0)
+        print('Set wallpaper as desktop background.')
+    elif opsys == 'Linux':
+        command = 'gsettings set org.gnome.desktop.background picture-uri {}'.format(filepath)
+        os.system(command)
+        print('Set wallpaper as desktop background.')
+    elif opsys == 'Darwin':
+        print('Mac OS is not yet supported.')
+    else:
+        print('OS not supported.')
 
 
 if __name__ == '__main__':
