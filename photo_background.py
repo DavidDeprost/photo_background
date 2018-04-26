@@ -5,6 +5,8 @@ import requests
 from PIL import Image
 from io import BytesIO
 
+import ctypes
+import subprocess
 import os
 import platform
 import random
@@ -51,20 +53,20 @@ def main(subject):
     username = json['user']['name']
     attribution = "Photograph by {} on Unsplash.".format(username)
     print(attribution)
+    
+    return 0
 
 
 def set_background(filepath):
     opsys = platform.system()
     if opsys == 'Windows':
-        import ctypes
-        ctypes.windll.user32.SystemParametersInfoA(20, 0, filepath, 0)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, filepath, 0)
         print('Set photo as desktop background.')
     elif opsys == 'Linux':
         command = 'gsettings set org.gnome.desktop.background picture-uri {}'.format(filepath)
         os.system(command)
         print('Set photo as desktop background.')
     elif opsys == 'Darwin':
-        import subprocess
         SCRIPT = """/usr/bin/osascript<<END
 tell application "Finder"
 set desktop picture to POSIX file "%s"
@@ -77,8 +79,8 @@ END"""
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Command line tool to automatically set a beautiful photo as desktop background.')
-    parser.add_argument('subject', help='The subject of the photo', nargs='?', default='sunset')
+    parser = argparse.ArgumentParser(description='Command line tool to automatically set a beautiful photograph as desktop background.')
+    parser.add_argument('subject', help='The subject of the photograph', nargs='?', default='sunset')
     args = parser.parse_args()
     
     main(args.subject)
