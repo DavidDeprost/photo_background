@@ -1,5 +1,5 @@
 # photo_background
-Simple script that downloads a random photo from Unsplash, and sets it as the desktop background.
+Simple script that downloads a random photo from [Unsplash](https://unsplash.com/), and sets it as the desktop background.
 
 I was loosely inspired by [this Rust code](https://github.com/faebser/beautiful-wallpaper-every-day/blob/master/src/main.rs);
 finding it hard to follow, I decided to rewrite it in Python.
