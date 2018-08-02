@@ -12,17 +12,18 @@ import platform
 import random
 import string
 
-def string_gen(size=10, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
+import constants
+
+def string_gen(size=constants.FILENAME_LENGTH, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 def main(subject):
     print('Downloading photo ...')
-    url = 'https://api.unsplash.com/photos/random'
     params = {'orientation': 'landscape', 'query': subject}
-    headers = {'Authorization': 'Client-ID 0effe79116d37cc227be6a361bd8d2e9d685abba78fab531b3040b0c7eed58d3',
+    headers = {'Authorization': 'Client-ID ' + constants.API_KEY,
                 'Accept-Version': 'v1'}
 
-    resp = requests.get(url, params=params, headers=headers)
+    resp = requests.get(constants.API_URL, params=params, headers=headers)
     if not resp.status_code == 200:
         print('Error connecting to unsplash.')
         return 1
@@ -53,7 +54,7 @@ def main(subject):
     username = json['user']['name']
     attribution = "Photograph by {} on Unsplash.".format(username)
     print(attribution)
-    
+
     return 0
 
 
@@ -80,7 +81,7 @@ END"""
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Command line tool to automatically set a beautiful photograph as desktop background.')
-    parser.add_argument('subject', help='The subject of the photograph', nargs='?', default='sunset')
+    parser.add_argument('subject', help='The subject of the photograph', nargs='?', default=constants.DEFAULT_PHOTO_SUBJECT)
     args = parser.parse_args()
-    
+
     main(args.subject)
