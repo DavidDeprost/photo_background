@@ -39,7 +39,7 @@ def main(subject):
         print(constants.TEXT_ERROR_DOWNLOAD)
         return 1
     ext = get_extension(resp)
-    filename = string_gen() + '.' + ext
+    filename = subject + "_" + string_gen() + '.' + ext
 
     # Save the returned image to disk:
     i = Image.open(BytesIO(resp.content))
