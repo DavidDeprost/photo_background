@@ -25,7 +25,7 @@ def main(subject):
                 'Accept-Version': 'v1'}
 
     resp = requests.get(constants.API_URL, params=params, headers=headers)
-    if not resp.status_code == 200:
+    if not resp.status_code == constants.STATUS_CODE_OK:
         print(constants.TEXT_ERROR_CONNECT)
         return 1
     json = resp.json()
@@ -33,7 +33,7 @@ def main(subject):
 
     pic_url = json['urls']['full']
     resp = requests.get(pic_url)
-    if not resp.status_code == 200:
+    if not resp.status_code == constants.STATUS_CODE_OK:
         print(constants.TEXT_ERROR_DOWNLOAD)
         return 1
     ext = resp.headers['content-type'].split('/')[1]
@@ -47,7 +47,7 @@ def main(subject):
     set_background(filepath)
 
     resp = requests.get(url, headers=headers)
-    if not resp.status_code == 200:
+    if not resp.status_code == constants.STATUS_CODE_OK:
         print(constants.TEXT_ERROR_PING)
         return 1
     # print('Pinged download location per api guidelines.')
@@ -60,20 +60,15 @@ def main(subject):
 
 def set_background(filepath):
     opsys = platform.system()
-    if opsys == 'Windows':
-        ctypes.windll.user32.SystemParametersInfoW(20, 0, filepath, 0)
+    if opsys == constants.SYSTEM_WINDOWS:
+        ctypes.windll.user32.SystemParametersInfoW(constants.WIN_SPI_SETBG, 0, filepath, 0)
         print(constants.TEXT_INFO_PICTURE_SET)
-    elif opsys == 'Linux':
-        command = 'gsettings set org.gnome.desktop.background picture-uri {}'.format(filepath)
-        os.system(command)
+    elif opsys == constants.SYSTEM_LINUX:
+        os.system(constants.BACKGROUND_SET_LINUX.format(filepath))
         print(constants.TEXT_INFO_PICTURE_SET)
-    elif opsys == 'Darwin':
-        SCRIPT = """/usr/bin/osascript<<END
-tell application "Finder"
-set desktop picture to POSIX file "%s"
-end tell
-END"""
-        subprocess.Popen(SCRIPT%filepath, shell=True)
+    elif opsys == constants.SYSTEM_OS_X:
+        subprocess.Popen(constants.BACKGROUND_SET_DARWIN % filepath,
+                         shell=True)
         print(constants.TEXT_INFO_PICTURE_SET)
     else:
         print(constants.TEXT_ERROR_OS_UNSUPPORTED.format(opsys))
@@ -81,7 +76,7 @@ END"""
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=constants.DESCRIPTION)
-    parser.add_argument('subject', help=constants.SUBJECT_DESCRIPTION, nargs='?', default=constants.DEFAULT_PHOTO_SUBJECT)
+    parser.add_argument(constants.ARG_SUBJECT, help=constants.SUBJECT_DESCRIPTION, nargs='?', default=constants.DEFAULT_PHOTO_SUBJECT)
     args = parser.parse_args()
 
     main(args.subject)

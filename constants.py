@@ -26,3 +26,21 @@ TEXT_INFO_ATTRIBUTION = 'Photograph by {} on Unsplash.'
 TEXT_INFO_DOWNLOADING = 'Downloading photo...'
 TEXT_INFO_PICTURE_SET = 'Set photo as desktop background.'
 TEXT_INFO_SAVE_PATH = 'Saved the photo to {}.'
+
+# Literals for setting background
+BACKGROUND_SET_LINUX = \
+    'gsettings set org.gnome.desktop.background picture-uri {}'
+BACKGROUND_SET_DARWIN = \
+    """/usr/bin/osascript<<END
+tell application "Finder"
+set desktop picture to POSIX file "%s"
+end tell
+END"""
+
+# General logic constants
+ARG_SUBJECT = 'subject'
+STATUS_CODE_OK = 200
+SYSTEM_LINUX = 'Linux'
+SYSTEM_OS_X = 'Darwin'
+SYSTEM_WINDOWS = 'Windows'
+WIN_SPI_SETBG = 20  # Parameter for setting desktop background in Windows
